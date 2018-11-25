@@ -13,13 +13,38 @@ class KNN:
 	def train(self, X, y):
 		#training logic here
 		#input is an array of features and labels
+		self.samples = np.array(X)
+		self.labels = np.array(y)
 		None
 
 	def predict(self, X):
 		#Run model here
 		#Return array of predictions where there is one prediction for each set of features
-		return None
+		prediction = np.array([])
+		for x in X:
+			distanceVector = self.getDistaceVector(x)
+			kNearestNeighbours = self.getKNearestNeighbours(distanceVector)
+			classification = self.classifyByMajorityVoting(kNearestNeighbours)
+			prediction = np.append(prediction,[classification])
+		return prediction
 
+	def getDistaceVector(self,x):
+		distances = np.array([self.distance(x, sample) for sample in self.samples])
+		return zip(distances, self.labels)
+
+	def getKNearestNeighbours(self, disatanceVector):
+		disatanceVector = sorted(disatanceVector, key=lambda x: x[0])
+		return disatanceVector[:self.k]
+
+	def classifyByMajorityVoting(self, kNearestNeighbours):
+		votingResults = {}
+		for neighbour in kNearestNeighbours:
+			label = neighbour[1]
+			if label in votingResults:
+				votingResults[label] += 1
+			else:
+				votingResults[label] = 1
+		return max(votingResults, key=votingResults.get)
 class ID3:
 	def __init__(self, nbins, data_range):
 		#Decision tree state here
@@ -55,12 +80,26 @@ class Perceptron:
 	def train(self, X, y, steps):
 		#training logic here
 		#input is array of features and labels
+		correctlyClassified = 0;
+		iterationCount = 0;
+		while iterationCount < steps:
+			trainingSample = X[iterationCount%len(X)]
+			desiredOutput = y[iterationCount%len(y)]
+			weightedSum = np.dot(trainingSample, self.w) + self.b
+			perceptronOutput = 0 if weightedSum < 0 else 1
+			if perceptronOutput != desiredOutput:
+				self.w = self.w + self.lr * desiredOutput * trainingSample
+				self.b = self.b + self.lr * desiredOutput
+			iterationCount += 1
 		None
 
 	def predict(self, X):
 		#Run model here
 		#Return array of predictions where there is one prediction for each set of features
-		return None
+		predictions = []
+		for testSample in X:
+			predictions.append(0 if np.dot(testSample, self.w) + self.b < 0 else 1)
+		return np.array(predictions)
 
 class MLP:
 	def __init__(self, w1, b1, w2, b2, lr):
@@ -118,11 +157,9 @@ class FCLayer:
 
 	def forward(self, input):
 		#Write forward pass here
-		return None
 
 	def backward(self, gradients):
-		#Write backward pass here
-		return None	
+		#Write backward pass herem
 
 class Sigmoid:
 
@@ -131,8 +168,7 @@ class Sigmoid:
 
 	def forward(self, input):
 		#Write forward pass here
-		return None
+		return self.activation
 
 	def backward(self, gradients):
 		#Write backward pass here
-		return None	
