@@ -157,9 +157,16 @@ class FCLayer:
 
 	def forward(self, input):
 		#Write forward pass here
+		self.input = input
+		self.weightedSum = weightedSum = np.dot(input, self.w) + self.b
+		return weightedSum
 
 	def backward(self, gradients):
-		#Write backward pass herem
+		#Write backward pass here
+		deltaToBackup = gradients.dot(self.w.T)
+		self.w = self.w - self.lr * self.input.T.dot(gradients)
+		self.b = self.b - self.lr * gradients
+		return deltaToBackup
 
 class Sigmoid:
 
@@ -168,7 +175,9 @@ class Sigmoid:
 
 	def forward(self, input):
 		#Write forward pass here
-		return self.activation
+		self.activation = activation = np.array([1/(1+np.exp(-x)) for x in input])
+		return activation
 
 	def backward(self, gradients):
 		#Write backward pass here
+		return gradients * np.array([x * (1 - x) for x in self.activation])

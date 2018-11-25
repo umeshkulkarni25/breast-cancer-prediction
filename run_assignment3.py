@@ -59,9 +59,9 @@ mlp = models.MLP(w1, b1, w2, b2, lr)
 
 #Train
 steps = 100*y_train.size
-# knn.train(X_train, y_train)
+knn.train(X_train, y_train)
 # id3.train(X_train, y_train)
-# perceptron.train(X_train, y_train, steps)
+perceptron.train(X_train, y_train, steps)
 mlp.train(X_train, y_train, steps)
 
 #Check weights (For grading)
@@ -80,11 +80,11 @@ def evaluate(solutions, real):
 	labels = np.array(real)
 	return (predictions == labels).sum() / float(labels.size)
 
-# solutions = knn.predict(X_test)
-# print(evaluate(solutions, y_test))
+solutions = knn.predict(X_test)
+print(evaluate(solutions, y_test))
 # solutions = id3.predict(X_test)
 # print(evaluate(solutions, y_test))
-# solutions = perceptron.predict(X_test)
-# print(evaluate(solutions, y_test))
+solutions = perceptron.predict(X_test)
+print(evaluate(solutions, y_test))
 solutions = mlp.predict(X_test)
 print(evaluate(solutions, y_test))
